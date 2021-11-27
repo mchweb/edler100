@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>Did Edler score 100th goal?</title>
+    <meta property="og:title" content="Did Edler score 100th goal?" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="" />
+    <meta property="og:image" content="" />
+    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    <meta http-equiv="refresh" content="300" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        width: 100vw;
+        height: 100vh;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      }
+      body.negative {
+        background-color: #e32423;
+      }
+      body.positive {
+        background-color: #00c853;
+      }
+      .result {
+        display: none;
+        font-size: 25vw;
+      }
+      .caption {
+        display: none;
+        padding-bottom: 40px;
+      }
+      .error {
+        display: none;
+      }
+      .visible {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      try {
+        const response = await fetch(
+          "https://statsapi.web.nhl.com/api/v1/people/8471303/stats?stats=homeAndAway&season=20212022"
+        );
+        const result = await response.json();
+        const isIt = result.stats[0].splits.reduce(
+          (acc, season) => acc || season.stat.goals > 0,
+          false
+        ); // || true;
+        const NO = [
+          "No",
+          "Nope",
+          "Nah",
+          "Nie",
+          "Nai",
+          "Nein",
+          "Nej",
+          "Nyet",
+          "Non",
+        ];
+        const index = Math.floor(Math.random() * NO.length);
+        const node = document.querySelector(".result");
+        node.classList.add("visible");
+        node.innerHTML = isIt ? "Yes!" : `${NO[index]}.`;
+        document.body.classList.add(isIt ? "positive" : "negative");
+        if (isIt) {
+          document.querySelector(".caption").classList.add("visible");
+        }
+        if (isIt && typeof window.runFireworks === "function") {
+          runFireworks();
+        }
+      } catch (error) {
+        document.querySelector(".error").classList.add("visible");
+      }
+    </script>
+
+    <p class="result"></p>
+    <p class="error">Couldn't connect, but probably no.</p>
+    <p class="caption">Fckin finally.</p>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+    <script>
+      const duration = 15 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+      function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      const shoot = function (interval, x, y) {
+        return setInterval(function () {
+          const timeLeft = animationEnd - Date.now();
+
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
+
+          const particleCount = 50 * (timeLeft / duration);
+          confetti(
+            Object.assign({}, defaults, {
+              particleCount,
+              origin: { x: randomInRange(x, y), y: Math.random() - 0.2 },
+            })
+          );
+        }, interval);
+      };
+      const runFireworks = function () {
+        shoot(500, 0.1, 0.3);
+        setTimeout(function () {
+          shoot(500, 0.7, 0.9);
+        }, 100);
+        setTimeout(function () {
+          shoot(500, 0.2, 0.5);
+        }, 150);
+      };
+      window.runFireworks = runFireworks;
+    </script>
+  </body>
+</html>
