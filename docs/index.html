@@ -50,41 +50,44 @@
     </style>
   </head>
   <body>
-    <script type="module">
-      try {
-        const response = await fetch(
-          "https://statsapi.web.nhl.com/api/v1/people/8471303/stats?stats=homeAndAway&season=20212022"
-        );
-        const result = await response.json();
-        const isIt = result.stats[0].splits.reduce(
-          (acc, season) => acc || season.stat.goals > 0,
-          false
-        ); // || true;
-        const NO = [
-          "No",
-          "Nope",
-          "Nah",
-          "Nie",
-          "Nai",
-          "Nein",
-          "Nej",
-          "Nyet",
-          "Non",
-        ];
-        const index = Math.floor(Math.random() * NO.length);
-        const node = document.querySelector(".result");
-        node.classList.add("visible");
-        node.innerHTML = isIt ? "Yes!" : `${NO[index]}.`;
-        document.body.classList.add(isIt ? "positive" : "negative");
-        if (isIt) {
-          document.querySelector(".caption").classList.add("visible");
+    <script>
+      const main = async () => {
+        try {
+          const response = await fetch(
+            "https://statsapi.web.nhl.com/api/v1/people/8471303/stats?stats=homeAndAway&season=20212022"
+          );
+          const result = await response.json();
+          const isIt = result.stats[0].splits.reduce(
+            (acc, season) => acc || season.stat.goals > 0,
+            false
+          ); // || true;
+          const NO = [
+            "No",
+            "Nope",
+            "Nah",
+            "Nie",
+            "Nai",
+            "Nein",
+            "Nej",
+            "Nyet",
+            "Non",
+          ];
+          const index = Math.floor(Math.random() * NO.length);
+          const node = document.querySelector(".result");
+          node.classList.add("visible");
+          node.innerHTML = isIt ? "Yes!" : `${NO[index]}.`;
+          document.body.classList.add(isIt ? "positive" : "negative");
+          if (isIt) {
+            document.querySelector(".caption").classList.add("visible");
+          }
+          if (isIt && typeof window.runFireworks === "function") {
+            runFireworks();
+          }
+        } catch (error) {
+          document.querySelector(".error").classList.add("visible");
         }
-        if (isIt && typeof window.runFireworks === "function") {
-          runFireworks();
-        }
-      } catch (error) {
-        document.querySelector(".error").classList.add("visible");
-      }
+      };
+      main();
     </script>
 
     <p class="result"></p>
